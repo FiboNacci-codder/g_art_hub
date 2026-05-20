@@ -1,0 +1,19 @@
+FROM php:8.2-fpm-alpine
+
+RUN apk add --no-cache nginx supervisor postgresql-dev \
+    && docker-php-ext-install pdo_pgsql pgsql
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /app
+COPY . .
+
+RUN composer install --no-dev --optimize-autoloader \
+    && chmod -R 775 storage bootstrap/cache
+
+COPY docker/nginx.conf /etc/nginx/http.d/default.conf
+COPY docker/supervisord.conf /etc/supervisord.conf
+
+EXPOSE 8080
+
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]
