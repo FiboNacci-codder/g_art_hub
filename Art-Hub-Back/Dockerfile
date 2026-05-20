@@ -19,7 +19,6 @@ RUN cp .env.example .env \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# PHP-FPM must pass env vars to workers (Render injects them)
 RUN sed -i.bak 's/^;clear_env = no/clear_env = no/' /usr/local/etc/php-fpm.d/www.conf 2>/dev/null; \
     grep -q '^clear_env = no' /usr/local/etc/php-fpm.d/www.conf || echo 'clear_env = no' >> /usr/local/etc/php-fpm.d/www.conf; \
     rm -f /usr/local/etc/php-fpm.d/www.conf.bak
