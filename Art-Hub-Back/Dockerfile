@@ -9,6 +9,8 @@ WORKDIR /app
 COPY . .
 
 RUN composer install --no-dev --optimize-autoloader \
+    && mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
