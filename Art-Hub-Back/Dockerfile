@@ -5,10 +5,16 @@ RUN apk add --no-cache nginx supervisor postgresql-dev \
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 WORKDIR /app
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader \
+RUN cp .env.example .env \
+    && php artisan key:generate --force \
+    && composer install --no-dev --optimize-autoloader \
+    && php artisan config:clear \
+    && rm .env \
     && mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
