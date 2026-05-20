@@ -6,6 +6,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/health', function () {
-    return response()->json(['status' => 'ok', 'time' => now()]);
+Route::withoutMiddleware([
+    \Illuminate\Session\Middleware\StartSession::class,
+    \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+])->get('/health', function () {
+    return response()->json(['status' => 'ok', 'time' => now()->toIso8601String()]);
 });

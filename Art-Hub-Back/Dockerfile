@@ -14,7 +14,9 @@ RUN composer install --no-dev --optimize-autoloader \
     && chmod -R 775 storage bootstrap/cache
 
 # PHP-FPM must pass env vars to workers (Render injects them)
-RUN sed -i 's/^;clear_env = no/clear_env = no/' /usr/local/etc/php-fpm.d/www.conf
+RUN sed -i.bak 's/^;clear_env = no/clear_env = no/' /usr/local/etc/php-fpm.d/www.conf 2>/dev/null; \
+    grep -q '^clear_env = no' /usr/local/etc/php-fpm.d/www.conf || echo 'clear_env = no' >> /usr/local/etc/php-fpm.d/www.conf; \
+    rm -f /usr/local/etc/php-fpm.d/www.conf.bak
 
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
